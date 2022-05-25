@@ -17,6 +17,7 @@ async function run() {
     try {
         await client.connect();
         const productCollection = client.db('bicycle_zen').collection('products');
+        const orderCollection = client.db('bicycle_zen').collection('orders');
 
         app.get('/product', async (req, res) => {
             const products = await productCollection.find().toArray();
@@ -28,6 +29,24 @@ async function run() {
             const query = {_id: ObjectId(id)};
             const result = await productCollection.findOne(query);
             res.send(result);
+        });
+
+        app.post('/order', async (req, res) => {
+            const order = req.body;
+            const result = await orderCollection.insertOne(order);
+            res.send({success: true, result})
+        });
+
+        app.get('/order', async (req, res) => {
+            const email = req.query?.email;
+            const query = {email: email};
+            const orders = await orderCollection.find(query).toArray();
+            res.send(orders);
+        });
+
+        app.put('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
         });
     }
     finally {}
