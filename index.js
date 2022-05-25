@@ -36,6 +36,8 @@ async function run() {
         const productCollection = client.db('bicycle_zen').collection('products');
         const orderCollection = client.db('bicycle_zen').collection('orders');
         const userCollection = client.db('bicycle_zen').collection('users');
+        const reviewCollection = client.db('bicycle_zen').collection('reviews')
+        const profileCollection = client.db('bicycle_zen').collection('profiles')
 
         app.get('/product', async (req, res) => {
             const products = await productCollection.find().toArray();
@@ -69,6 +71,7 @@ async function run() {
             
         });
 
+        // don't use jwt here
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
             const user = req.body;
@@ -81,6 +84,25 @@ async function run() {
             const token = jwt.sign({email: email}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1d'})
             res.send({result, token});
         });
+
+        app.post('/review', async (req, res) => {
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.send({success: true, result})            
+        });
+
+        app.put('/profile/:email', async (req, res) => {
+            const email = req.params.email;
+            const profile = req.body;
+            const filter = {email: email};
+            const options = {upsert: true};
+            const updateDoc = {
+                $set: profile,
+            }
+            const result = await profileCollection.updateOne(filter, updateDoc, options);
+            res.send({success: true, result})
+        });
+
     }
     finally {}
 }
