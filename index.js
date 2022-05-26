@@ -68,6 +68,13 @@ async function run() {
             res.send(result);
         });
 
+        app.delete('/product/:id', verifyJWT, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const filter = {_id: ObjectId(id)};
+            const result = await productCollection.deleteOne(filter);
+            res.send(result)
+        })
+
         app.post('/order', async (req, res) => {
             const order = req.body;
             const result = await orderCollection.insertOne(order);
