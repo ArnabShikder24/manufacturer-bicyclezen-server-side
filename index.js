@@ -197,6 +197,11 @@ async function run() {
             res.send({success: true, result})
         });
 
+        app.get('/review', async (req, res) => {
+            const reviews = await reviewCollection.find().toArray();
+            res.send(reviews);
+        });
+
     }
     finally {}
 }
