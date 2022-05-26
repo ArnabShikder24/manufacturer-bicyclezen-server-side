@@ -39,6 +39,7 @@ async function run() {
         const userCollection = client.db('bicycle_zen').collection('users');
         const reviewCollection = client.db('bicycle_zen').collection('reviews');
         const profileCollection = client.db('bicycle_zen').collection('profiles');
+        const paymentCollection = client.db('bicycle_zen').collection('payments');
 
         const verifyAdmin = async (req, res, next) => {
             const requester = req.decoded.email;
@@ -107,6 +108,21 @@ async function run() {
             }
             
         });
+
+        app.patch('/order/:id', verifyJWT, async (req, res) => {
+            const id = req.params?.id;
+            const payment = req.body;
+            const filter = {_id: ObjectId(id)}
+            const updateDoc = {
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId,
+                }
+            }
+            const result = await paymentCollection.insertOne(payment);
+            const updateOrder = await orderCollection.updateOne(filter, updateDoc);
+            res.send(updateOrder);
+        })
 
         app.get('/order/:id', verifyJWT, async (req, res) => {
             const id = req.params?.id;
