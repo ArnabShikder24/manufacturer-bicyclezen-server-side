@@ -87,12 +87,17 @@ async function run() {
             const filter = {_id: ObjectId(id)};
             const result = await productCollection.deleteOne(filter);
             res.send(result)
-        })
+        });
 
         app.post('/order', async (req, res) => {
             const order = req.body;
             const result = await orderCollection.insertOne(order);
             res.send({success: true, result})
+        });
+
+        app.get('/order', verifyJWT, verifyAdmin, async (req, res) => {
+            const order = await orderCollection.find().toArray();
+            res.send(order);
         });
 
         app.get('/order', verifyJWT, async (req, res) => {
@@ -128,6 +133,13 @@ async function run() {
             const id = req.params?.id;
             const query = {_id: ObjectId(id)}
             const result = await orderCollection.findOne(query);
+            res.send(result);
+        });
+
+        app.delete('/order/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await orderCollection.deleteOne(query);
             res.send(result);
         });
 
