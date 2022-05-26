@@ -136,6 +136,20 @@ async function run() {
             res.send(result);
         });
 
+        app.put('/order/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const shipped = req.body?.shipped;
+            const filter = {_id: ObjectId(id)};
+            const options = {upsert: true};
+            const updateDoc = {
+                $set: {
+                    shipped: shipped,
+                }
+            }
+            const result = await orderCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        });
+
         app.delete('/order/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = {_id: ObjectId(id)};
