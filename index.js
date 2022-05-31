@@ -95,7 +95,7 @@ async function run() {
             res.send({success: true, result})
         });
 
-        app.get('/order', verifyJWT, async (req, res) => {
+        app.get('/allorder', verifyJWT, async (req, res) => {
             const order = await orderCollection.find().toArray();
             res.send(order);
         });
@@ -197,6 +197,13 @@ async function run() {
             const review = req.body;
             const result = await reviewCollection.insertOne(review);
             res.send({success: true, result})            
+        });
+
+        app.get('/profile/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = {email: email};
+            const userProfile = await profileCollection.findOne(query)
+            res.send(userProfile);
         });
 
         app.put('/profile/:email', async (req, res) => {
